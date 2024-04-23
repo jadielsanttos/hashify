@@ -11,6 +11,5 @@ git clone https://github.com/jadielsanttos/hashify.git
 # Usage 
 ```bash
 cd hashify
-pip install
-python3 app.py
+python app.py
 ```
