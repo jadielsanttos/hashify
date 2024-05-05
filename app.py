@@ -1,46 +1,62 @@
 from colorama import Fore
+from time import sleep
 import hashlib
 import pyfiglet
+import argparse
 
-tool_name = "HASHIFY"
+parser = argparse.ArgumentParser()
+parser.add_argument("-H", "--Hash", help="Enter your hash")
+parser.add_argument("-W", "--Wordlist", help="Enter your wordlist")
+parser.add_argument("-G", "--Generate", help="You can generate your hash")
+args = parser.parse_args()
 
-print(Fore.CYAN+pyfiglet.figlet_format(tool_name))
-print("Author: Jadiel Santos")
-print("Version: 1.0"+"\n")
+hash = args.Hash
+wordlist = args.Wordlist
+text = args.Generate
 
-print("#=====================#")
-print("|[1] -> MD5           |")
-print("|[2] -> SHA256        |")
-print("#=====================#"+"\n")
+print(Fore.CYAN+pyfiglet.figlet_format("HASHIFY"))
+print(Fore.LIGHTWHITE_EX+"------------------")
+print(Fore.LIGHTWHITE_EX+"Author: Th3 Want3d")
+print(Fore.LIGHTWHITE_EX+"Version: 1.1")
+print(Fore.LIGHTWHITE_EX+"------------------\n")
 
-def hash_generate():
-    hash = ""
+def hash_crack(hash, file):
+    wordlist = open(file, "r")
+    word_count = 1
+    final_wordlist = wordlist.read().split()
+
+    print("[!] hash ==> "+hash)
+    print("[!] wordlist ==> "+file+"\n")
+
     try:
-        while True:
-            option = input("Choose an option: ")
-            text = input("Enter your text: ")
-            encode = text.encode("UTF-8")
+        for word in final_wordlist:
+            new_word = word.replace("\n", "")
 
-            if option == "1":
-                hash = hashlib.md5(encode).hexdigest()
-            elif option == "2":
-                hash = hashlib.sha256(encode).hexdigest()
-            else:
-                print("Invalid option!")
+            encode = new_word.encode("UTF-8")
+            
+            print("--- attempt ["+str(word_count)+"] ==> "+new_word)
+            sleep(0.5)
+            
+            if hash == hashlib.md5(encode).hexdigest():
+                print("[+] 1 of 1 target successfully completed, valid text found: "+Fore.LIGHTGREEN_EX+new_word)
                 break
 
-            hash_length = str(len(hash))
+            if len(final_wordlist) == word_count:
+                print("[!] 1 of 1 target successfully completed, no valid text found")
+                break
+            word_count += 1
 
-            print(" ")
-            for i in range(0, int(hash_length)):
-                print("=", end="")
-            print(" ")
-            print(hash)
-            for i in range(0, int(hash_length)):
-                print("=", end="")
-            print(" ")
-            
     except KeyboardInterrupt:
-        print("\n Bye")
+        print("\n Bye!")
 
-hash_generate()
+def hash_generate(text):
+    encode = text.encode("UTF-8")
+    hash = hashlib.md5(encode).hexdigest()
+
+    print("[+] hash generated ==> "+Fore.LIGHTGREEN_EX+hash)
+
+if text:
+    hash_generate(text)
+
+if hash and wordlist:
+    hash_crack(hash, wordlist)
